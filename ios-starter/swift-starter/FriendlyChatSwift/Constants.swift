@@ -14,21 +14,35 @@
 //  limitations under the License.
 //
 
-struct Constants {
+struct Constants
+{
+    struct NotificationKeys
+    {
+        static let SignedIn = "onSignInCompleted"
+    }
 
-  struct NotificationKeys {
-    static let SignedIn = "onSignInCompleted"
-  }
+    struct Segues
+    {
+        static let SignInToFp = "SignInToFP"
+        static let FpToSignIn = "FPToSignIn"
+    }
 
-  struct Segues {
-    static let SignInToFp = "SignInToFP"
-    static let FpToSignIn = "FPToSignIn"
-  }
+    struct MessageFields
+    {
+        static let name = "name"
+        static let text = "text"
+        static let photoURL = "photoURL"
+        static let imageURL = "imageURL"
+    }
 
-  struct MessageFields {
-    static let name = "name"
-    static let text = "text"
-    static let photoURL = "photoURL"
-    static let imageURL = "imageURL"
-  }
+    struct Database
+    {
+        static let messages = "messages"
+    }
+    
+    struct Storage
+    {
+        static let urlPrefix = "gs://"
+        static let contentTypeJPEG = "image/jpeg"
+    }
 }
