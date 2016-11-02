@@ -45,4 +45,9 @@ struct Constants
         static let urlPrefix = "gs://"
         static let contentTypeJPEG = "image/jpeg"
     }
+    
+    struct ClientCell
+    {
+        static let Identifier = "tableViewCell"
+    }
 }
