@@ -50,4 +50,22 @@ struct Constants
     {
         static let Identifier = "tableViewCell"
     }
+    
+    struct RemoteConfig
+    {
+        static let FriendlyMessageLengthKey = "friendly_msg_length"
+        static let FriendlyMessageLengthValue = 20
+    }
+    
+    struct Analytics
+    {
+        static let LogoutEventLog = "logout"
+        static let MessageEventLog = "message"
+    }
+    
+    struct Crash
+    {
+        static let MessageViewLoaded = "View loaded"
+        static let MessageCrashClicked = "Cause Crash button clicked"
+    }
 }

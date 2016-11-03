@@ -87,12 +87,43 @@ class FCViewController: UIViewController, UITableViewDataSource, UITableViewDele
 
     func configureRemoteConfig()
     {
-        
+        remoteConfig = FIRRemoteConfig.remoteConfig()
+        // Create Remote Config Setting to enable developer mode.
+        // Fetching configs from the server is normally limited to 5 requests per hour.
+        // Enabling developer mode allows many more requests to be made per hour, so developers can test different config values during development.
+        let remoteConfigSettings = FIRRemoteConfigSettings(developerModeEnabled: true)
+        remoteConfig.configSettings = remoteConfigSettings!
     }
 
     func fetchConfig()
     {
+        var expirationDuration: Double = 3600
+        // If in developer mode cacheExpiration is set to 0 so each fetch 
+        // will retrieve values from the server.
+        if (self.remoteConfig.configSettings.isDeveloperModeEnabled)
+        {
+            expirationDuration = 0
+        }
         
+        remoteConfig.fetch(withExpirationDuration: expirationDuration)
+        { (status, error) in
+            if status == .success
+            {
+                print("Configuration Fetched.")
+                self.remoteConfig.activateFetched()
+                let friendlyMsgLength = self.remoteConfig[Constants.RemoteConfig.FriendlyMessageLengthKey]
+                if friendlyMsgLength.source != .static
+                {
+                    self.msglength = friendlyMsgLength.numberValue!
+                    print("Friendly msg length config: \(self.msglength)")
+                }
+            }
+            else
+            {
+                print("Config not fetched.")
+                print("Error \(error)")
+            }
+        }
     }
 
     @IBAction func didPressFreshConfig(_ sender: AnyObject)
@@ -107,17 +138,20 @@ class FCViewController: UIViewController, UITableViewDataSource, UITableViewDele
 
     @IBAction func didPressCrash(_ sender: AnyObject)
     {
+        FIRCrashMessage(Constants.Crash.MessageCrashClicked)
         fatalError()
     }
 
     func logViewLoaded()
     {
-        
+        FIRCrashMessage(Constants.Crash.MessageViewLoaded)
     }
 
     func loadAd()
     {
-        
+        self.banner.adUnitID = kBannerAdUnitID
+        self.banner.rootViewController = self
+        self.banner.load(GADRequest())
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool
@@ -194,19 +228,6 @@ class FCViewController: UIViewController, UITableViewDataSource, UITableViewDele
     {
           picker.dismiss(animated: true, completion:nil)
         guard let uid = FIRAuth.auth()?.currentUser?.uid else { return }
-
-        // if it's a photo from the library, not an image from the camera
-//        if #available(iOS 8.0, *), let referenceURL = info[UIImagePickerControllerReferenceURL]
-//        {
-//            let assets = PHAsset.fetchAssets(withALAssetURLs: [referenceURL as! URL], options: nil)
-//            let asset = assets.firstObject
-//            asset?.requestContentEditingInput(with: nil, completionHandler: { (contentEditingInput, info) in
-//            let imageFile = contentEditingInput?.fullSizeImageURL
-//            let filePath = "\(uid)/\(Int(Date.timeIntervalSinceReferenceDate * 1000))/\((referenceURL as AnyObject).lastPathComponent!)"
-//            })
-//        }
-//        else
-//        {
         guard let image = info[UIImagePickerControllerOriginalImage] as! UIImage? else { return }
         let imageData = UIImageJPEGRepresentation(image, 0.8)
         let imagePath = "\(uid)/\(Int(Date.timeIntervalSinceReferenceDate * 1000)).jpg"
